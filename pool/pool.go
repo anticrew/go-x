@@ -59,7 +59,7 @@ func NewPool[T any](ctor func() T, options ...Option[T]) Pool[T] {
 }
 
 func (p *typedSyncPool[T]) Get() T {
-	return p.p.Get().(T)
+	return p.p.Get().(T) //nolint: errcheck // always is T
 }
 
 func (p *typedSyncPool[T]) Put(t T) {
