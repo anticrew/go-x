@@ -11,8 +11,7 @@ import (
 const (
 	Quote = '"'
 
-	defaultSize      = 1024
-	effectiveGrowMin = 32
+	defaultSize = 1024
 )
 
 var _pool = pool.NewPool(func() *Buffer {
@@ -26,7 +25,7 @@ type Buffer struct {
 	quotes bool
 }
 
-func New() *Buffer {
+func NewBuffer() *Buffer {
 	return _pool.Get()
 }
 

@@ -23,47 +23,47 @@ func TestBuffer_WriteByte(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-a": {
 			b:        'a',
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "a",
 		},
 		"empty-1": {
 			b:        '1',
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "1",
 		},
 		"empty-#": {
 			b:        '#',
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "#",
 		},
 		"content-a": {
 			b:        'a',
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-a",
 		},
 		"content-1": {
 			b:        '1',
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-1",
 		},
 		"content-#": {
 			b:        '#',
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#",
 		},
 		"quoted-a": {
 			b:        'a',
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"a"`,
 		},
 		"quoted-1": {
 			b:        '1',
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"1"`,
 		},
 		"quoted-#": {
 			b:        '#',
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"#"`,
 		},
 	}
@@ -94,47 +94,47 @@ func TestBuffer_WriteBytes(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-abc": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "abc",
 		},
 		"empty-123": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "123",
 		},
 		"empty-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "#@$",
 		},
 		"content-a": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-abc",
 		},
 		"content-1": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-123",
 		},
 		"content-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
 		},
 		"quoted-abc": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"abc"`,
 		},
 		"quoted-123": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"123"`,
 		},
 		"quoted-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"#@$"`,
 		},
 	}
@@ -165,47 +165,47 @@ func TestBuffer_WriteString(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-abc": {
 			s:        "abc",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "abc",
 		},
 		"empty-123": {
 			s:        "123",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "123",
 		},
 		"empty-#@$": {
 			s:        "#@$",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "#@$",
 		},
 		"content-a": {
 			s:        "abc",
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-abc",
 		},
 		"content-1": {
 			s:        "123",
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-123",
 		},
 		"content-#@$": {
 			s:        "#@$",
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
 		},
 		"quoted-abc": {
 			s:        "abc",
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"abc"`,
 		},
 		"quoted-123": {
 			s:        "123",
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"123"`,
 		},
 		"quoted-#@$": {
 			s:        "#@$",
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"#@$"`,
 		},
 	}
@@ -236,57 +236,57 @@ func TestBuffer_WriteInt64(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-10": {
 			i:        10,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "10",
 		},
 		"empty-0": {
 			i:        0,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "0",
 		},
 		"empty-(-10)": {
 			i:        -10,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "-10",
 		},
 		"content-10": {
 			i:        10,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-10",
 		},
 		"content-0": {
 			i:        0,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-0",
 		},
 		"content-(-10)": {
 			i:        -10,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content--10",
 		},
 		"quoted-10": {
 			i:        10,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"10"`,
 		},
 		"quoted-0": {
 			i:        0,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"0"`,
 		},
 		"quoted-(-10)": {
 			i:        -10,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"-10"`,
 		},
 		"edge-max": {
 			i:        math.MaxInt64,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "9223372036854775807",
 		},
 		"edge-min": {
 			i:        -math.MaxInt64,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "-9223372036854775807",
 		},
 	}
@@ -317,37 +317,37 @@ func TestBuffer_WriteUint64(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-10": {
 			i:        10,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "10",
 		},
 		"empty-0": {
 			i:        0,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "0",
 		},
 		"content-10": {
 			i:        10,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-10",
 		},
 		"content-0": {
 			i:        0,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-0",
 		},
 		"quoted-10": {
 			i:        10,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"10"`,
 		},
 		"quoted-0": {
 			i:        0,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"0"`,
 		},
 		"edge-max": {
 			i:        math.MaxUint64,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "18446744073709551615",
 		},
 	}
@@ -378,82 +378,82 @@ func TestBuffer_WriteFloat64(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-3.14159": {
 			i:        3.14159,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "3.14159",
 		},
 		"empty-10": {
 			i:        10,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "10",
 		},
 		"empty-0": {
 			i:        0,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "0",
 		},
 		"empty-(-10)": {
 			i:        -10,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "-10",
 		},
 		"empty-(-3.14159)": {
 			i:        -3.14159,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "-3.14159",
 		},
 		"content-3.14159": {
 			i:        3.14159,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-3.14159",
 		},
 		"content-10": {
 			i:        10,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-10",
 		},
 		"content-0": {
 			i:        0,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-0",
 		},
 		"content-(-10)": {
 			i:        -10,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content--10",
 		},
 		"content-(-3.14159)": {
 			i:        -3.14159,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content--3.14159",
 		},
 		"quoted-3.14159": {
 			i:        3.14159,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"3.14159"`,
 		},
 		"quoted-10": {
 			i:        10,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"10"`,
 		},
 		"quoted-0": {
 			i:        0,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"0"`,
 		},
 		"quoted-(-10)": {
 			i:        -10,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"-10"`,
 		},
 		"quoted-(-3.14159)": {
 			i:        -3.14159,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"-3.14159"`,
 		},
 		"edge-max": {
 			i:   math.MaxFloat64,
-			buf: New(),
+			buf: NewBuffer(),
 			expected: "179769313486231570000000000000000000000000000000000000000000000000000000000000000000" +
 				"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
 				"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
@@ -487,32 +487,32 @@ func TestBuffer_WriteBool(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-true": {
 			b:        true,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "true",
 		},
 		"empty-false": {
 			b:        false,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "false",
 		},
 		"content-true": {
 			b:        true,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-true",
 		},
 		"content-false": {
 			b:        false,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-false",
 		},
 		"quoted-true": {
 			b:        true,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"true"`,
 		},
 		"quoted-false": {
 			b:        false,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"false"`,
 		},
 	}
@@ -553,67 +553,67 @@ func TestBuffer_WriteTime(t *testing.T) {
 		"empty-utc-rfc3339": {
 			t:        dateUTC,
 			layout:   time.RFC3339,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: dateUTC.Format(time.RFC3339),
 		},
 		"empty-mow-rfc3339": {
 			t:        dateMOW,
 			layout:   time.RFC3339,
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: dateMOW.Format(time.RFC3339),
 		},
 		"empty-utc-empty": {
 			t:        dateUTC,
 			layout:   "",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "",
 		},
 		"content-utc-rfc3339": {
 			t:        dateUTC,
 			layout:   time.RFC3339,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-" + dateUTC.Format(time.RFC3339),
 		},
 		"content-mow-rfc3339": {
 			t:        dateMOW,
 			layout:   time.RFC3339,
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-" + dateMOW.Format(time.RFC3339),
 		},
 		"content-utc-empty": {
 			t:        dateUTC,
 			layout:   "",
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-",
 		},
 		"quoted-utc-rfc3339": {
 			t:        dateUTC,
 			layout:   time.RFC3339,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: fmt.Sprintf(`"%s"`, dateUTC.Format(time.RFC3339)),
 		},
 		"quoted-mow-rfc3339": {
 			t:        dateMOW,
 			layout:   time.RFC3339,
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: fmt.Sprintf(`"%s"`, dateMOW.Format(time.RFC3339)),
 		},
 		"quoted-utc-empty": {
 			t:        dateUTC,
 			layout:   "",
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `""`,
 		},
 		"empty-utc-custom": {
 			t:        dateUTC,
 			layout:   "2006-01-02",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: dateUTC.Format("2006-01-02"),
 		},
 		"empty-mow-custom": {
 			t:        dateMOW,
 			layout:   "2006-01-02",
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: dateMOW.Format("2006-01-02"),
 		},
 	}
@@ -644,47 +644,47 @@ func TestBuffer_Write(t *testing.T) {
 	testCases := map[string]testCase{
 		"empty-abc": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "abc",
 		},
 		"empty-123": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "123",
 		},
 		"empty-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "#@$",
 		},
 		"content-a": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-abc",
 		},
 		"content-1": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-123",
 		},
 		"content-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New().WriteString("content-"),
+			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
 		},
 		"quoted-abc": {
 			b:        []byte{'a', 'b', 'c'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"abc"`,
 		},
 		"quoted-123": {
 			b:        []byte{'1', '2', '3'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"123"`,
 		},
 		"quoted-#@$": {
 			b:        []byte{'#', '@', '$'},
-			buf:      New().WithQuotes(),
+			buf:      NewBuffer().WithQuotes(),
 			expected: `"#@$"`,
 		},
 	}
@@ -716,15 +716,15 @@ func TestBuffer_WriteTo(t *testing.T) {
 
 	testCases := map[string]testCase{
 		"empty": {
-			buf:      New(),
+			buf:      NewBuffer(),
 			expected: "",
 		},
 		"content": {
-			buf:      New().WriteString("content"),
+			buf:      NewBuffer().WriteString("content"),
 			expected: "content",
 		},
 		"quoted-content": {
-			buf:      New().WithQuotes().WriteString("content"),
+			buf:      NewBuffer().WithQuotes().WriteString("content"),
 			expected: `"content"`,
 		},
 	}
@@ -750,7 +750,7 @@ func TestBuffer_WriteTo(t *testing.T) {
 func TestBuffer_Bytes(t *testing.T) {
 	t.Parallel()
 
-	buf := New()
+	buf := NewBuffer()
 	buf.WriteString("content")
 	buf.WriteInt64(25)
 	buf.WriteBool(true)
@@ -768,11 +768,11 @@ func TestBuffer_Len(t *testing.T) {
 
 	testCases := map[string]testCase{
 		"empty": {
-			buf: New(),
+			buf: NewBuffer(),
 			len: 0,
 		},
 		"content": {
-			buf: New().WriteString("content"),
+			buf: NewBuffer().WriteString("content"),
 			len: 7,
 		},
 		"cap-not-len": {
@@ -806,11 +806,11 @@ func TestBuffer_Cap(t *testing.T) {
 
 	testCases := map[string]testCase{
 		"empty": {
-			buf: New(),
+			buf: NewBuffer(),
 			cap: defaultSize,
 		},
 		"content": {
-			buf: New().WriteString("content"),
+			buf: NewBuffer().WriteString("content"),
 			cap: defaultSize,
 		},
 		"cap-not-len": {
@@ -837,7 +837,7 @@ func TestBuffer_Cap(t *testing.T) {
 func TestBuffer_Reset(t *testing.T) {
 	t.Parallel()
 
-	buf := New()
+	buf := NewBuffer()
 	buf.WriteString("content")
 	assert.Equal(t, "content", buf.String())
 
@@ -863,27 +863,27 @@ func TestBuffer_CutSuffix(t *testing.T) {
 
 	testCases := map[string]testCase{
 		"empty": {
-			buf:      New(),
+			buf:      NewBuffer(),
 			suffix:   []byte{},
 			expected: "",
 		},
 		"no-suffix": {
-			buf:      New(),
+			buf:      NewBuffer(),
 			suffix:   []byte("suffix"),
 			expected: "",
 		},
 		"large-suffix": {
-			buf:      New().WriteString("suf"),
+			buf:      NewBuffer().WriteString("suf"),
 			suffix:   []byte("suffix"),
 			expected: "suf",
 		},
 		"partial-suffix": {
-			buf:      New().WriteString("suf_ix"),
+			buf:      NewBuffer().WriteString("suf_ix"),
 			suffix:   []byte("suffix"),
 			expected: "suf_ix",
 		},
 		"cut-suffix": {
-			buf:      New().WriteString("content-suffix"),
+			buf:      NewBuffer().WriteString("content-suffix"),
 			suffix:   []byte("suffix"),
 			expected: "content-",
 		},
@@ -955,7 +955,7 @@ func BenchmarkBuffer(b *testing.B) {
 			b.ReportAllocs()
 
 			for b.Loop() {
-				buf := New()
+				buf := NewBuffer()
 				writeAll(buf, bench.quoted, bench.count)
 
 				buf.Dispose()
