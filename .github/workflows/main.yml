@@ -35,7 +35,7 @@ jobs:
       - name: Set up
         uses: anticrew/gh-setup-go@master
         with:
-          go-version: ${GO_VERSION}
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Run go test
         run: go test -cover -coverprofile=coverage.txt ./...
