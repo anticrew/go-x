@@ -1,10 +1,11 @@
 package xio
 
 import (
-	"github.com/anticrew/go-x/pool"
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/anticrew/go-x/pool"
 )
 
 const (

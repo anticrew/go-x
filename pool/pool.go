@@ -45,13 +45,13 @@ type typedSyncPool[T any] struct {
 	options Options[T]
 }
 
-func NewPool[T any](new func() T, options ...Option[T]) Pool[T] {
+func NewPool[T any](ctor func() T, options ...Option[T]) Pool[T] {
 	opt := optionChain[T](options).apply()
 
 	return &typedSyncPool[T]{
 		p: &sync.Pool{
 			New: func() any {
-				return new()
+				return ctor()
 			},
 		},
 		options: opt,

@@ -15,10 +15,3 @@ var _background = withCancelCause(context.Background(), func(cause error) {
 func Background() Context {
 	return _background
 }
-
-func wrap(ctx context.Context, cancel context.CancelCauseFunc) Context {
-	return &cancelContext{
-		ctx:    ctx,
-		cancel: cancel,
-	}
-}
