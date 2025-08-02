@@ -2,7 +2,7 @@ package xio
 
 import (
 	"bytes"
-	"fmt"
+	"io"
 	"math"
 	"testing"
 	"time"
@@ -10,6 +10,226 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestBuffer_Seek(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		buf *Buffer
+
+		offset int64
+		whence int
+
+		data string
+
+		expectedOffset int64
+		expectedError  error
+		expected       string
+	}
+
+	testCases := map[string]testCase{
+		"empty/no-write/start/0": {
+			buf:    NewBuffer(),
+			offset: 0,
+			whence: io.SeekStart,
+		},
+		"empty/no-write/current/0": {
+			buf:    NewBuffer(),
+			offset: 0,
+			whence: io.SeekCurrent,
+		},
+		"empty/no-write/end/0": {
+			buf:    NewBuffer(),
+			offset: 0,
+			whence: io.SeekEnd,
+		},
+		"empty/no-write/start/5": {
+			buf:           NewBuffer(),
+			offset:        5,
+			whence:        io.SeekStart,
+			expectedError: ErrInvalidOffset,
+		},
+		"empty/no-write/current/5": {
+			buf:           NewBuffer(),
+			offset:        5,
+			whence:        io.SeekCurrent,
+			expectedError: ErrInvalidOffset,
+		},
+		"empty/no-write/end/5": {
+			buf:           NewBuffer(),
+			offset:        5,
+			whence:        io.SeekEnd,
+			expectedError: ErrInvalidOffset,
+		},
+		"empty/no-write/start/-5": {
+			buf:           NewBuffer(),
+			offset:        -5,
+			whence:        io.SeekStart,
+			expectedError: ErrInvalidOffset,
+		},
+		"empty/no-write/current/-5": {
+			buf:           NewBuffer(),
+			offset:        -5,
+			whence:        io.SeekCurrent,
+			expectedError: ErrInvalidOffset,
+		},
+		"empty/no-write/end/-5": {
+			buf:           NewBuffer(),
+			offset:        -5,
+			whence:        io.SeekEnd,
+			expectedError: ErrInvalidOffset,
+		},
+		"full/no-write/start/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekStart,
+			expectedOffset: 0,
+			expected:       "",
+		},
+		"full/no-write/current/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekCurrent,
+			expectedOffset: 20,
+			expected:       "uswiOPYT8AfCutIIqTf8",
+		},
+		"full/no-write/end/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekEnd,
+			expectedOffset: 20,
+			expected:       "uswiOPYT8AfCutIIqTf8",
+		},
+		"full/no-write/start/5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         5,
+			whence:         io.SeekStart,
+			expectedOffset: 5,
+			expected:       "uswiO",
+		},
+		"full/no-write/current/5": {
+			buf:           NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:        5,
+			whence:        io.SeekCurrent,
+			expectedError: ErrInvalidOffset,
+		},
+		"full/no-write/end/5": {
+			buf:           NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:        5,
+			whence:        io.SeekEnd,
+			expectedError: ErrInvalidOffset,
+		},
+		"full/no-write/start/-5": {
+			buf:           NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:        -5,
+			whence:        io.SeekStart,
+			expectedError: ErrInvalidOffset,
+		},
+		"full/no-write/current/-5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         -5,
+			whence:         io.SeekCurrent,
+			expectedOffset: 15,
+			expected:       "uswiOPYT8AfCutI",
+		},
+		"full/no-write/end/-5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         -5,
+			whence:         io.SeekEnd,
+			expectedOffset: 15,
+			expected:       "uswiOPYT8AfCutI",
+		},
+		"full/write/start/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekStart,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 0,
+			expected:       "qDp1zU0MUQTJcxFy3wR4",
+		},
+		"full/write/current/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekCurrent,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 20,
+			expected:       "uswiOPYT8AfCutIIqTf8qDp1zU0MUQTJcxFy3wR4",
+		},
+		"full/write/end/0": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         0,
+			whence:         io.SeekEnd,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 20,
+			expected:       "uswiOPYT8AfCutIIqTf8qDp1zU0MUQTJcxFy3wR4",
+		},
+		"full/write/start/5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         5,
+			whence:         io.SeekStart,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 5,
+			expected:       "uswiOqDp1zU0MUQTJcxFy3wR4",
+		},
+		"full/write/current/-5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         -5,
+			whence:         io.SeekCurrent,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 15,
+			expected:       "uswiOPYT8AfCutIqDp1zU0MUQTJcxFy3wR4",
+		},
+		"full/write/end/-5": {
+			buf:            NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:         -5,
+			whence:         io.SeekEnd,
+			data:           "qDp1zU0MUQTJcxFy3wR4",
+			expectedOffset: 15,
+			expected:       "uswiOPYT8AfCutIqDp1zU0MUQTJcxFy3wR4",
+		},
+		"empty/no-write/bad/0": {
+			buf:           NewBuffer(),
+			offset:        0,
+			whence:        -1,
+			expectedError: ErrInvalidWhence,
+		},
+		"empty/no-write/bad/5": {
+			buf:           NewBuffer(),
+			offset:        5,
+			whence:        -1,
+			expectedError: ErrInvalidWhence,
+		},
+		"full/no-write/bad/0": {
+			buf:           NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:        21,
+			whence:        -1,
+			expectedError: ErrInvalidWhence,
+		},
+		"full/no-write/bad/5": {
+			buf:           NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			offset:        5,
+			whence:        -1,
+			expectedError: ErrInvalidWhence,
+		},
+	}
+
+	for name, test := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			offset, err := test.buf.Seek(test.offset, test.whence)
+			if test.expectedError != nil {
+				require.ErrorIs(t, err, test.expectedError)
+				return
+			}
+
+			assert.Equal(t, test.expectedOffset, offset)
+
+			test.buf.WriteString(test.data)
+			assert.Equal(t, test.expected, test.buf.String())
+		})
+	}
+}
 
 func TestBuffer_WriteByte(t *testing.T) {
 	t.Parallel()
@@ -50,21 +270,6 @@ func TestBuffer_WriteByte(t *testing.T) {
 			b:        '#',
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#",
-		},
-		"quoted-a": {
-			b:        'a',
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"a"`,
-		},
-		"quoted-1": {
-			b:        '1',
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"1"`,
-		},
-		"quoted-#": {
-			b:        '#',
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"#"`,
 		},
 	}
 
@@ -122,21 +327,6 @@ func TestBuffer_WriteBytes(t *testing.T) {
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
 		},
-		"quoted-abc": {
-			b:        []byte{'a', 'b', 'c'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"abc"`,
-		},
-		"quoted-123": {
-			b:        []byte{'1', '2', '3'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"123"`,
-		},
-		"quoted-#@$": {
-			b:        []byte{'#', '@', '$'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"#@$"`,
-		},
 	}
 
 	for name, test := range testCases {
@@ -192,21 +382,6 @@ func TestBuffer_WriteString(t *testing.T) {
 			s:        "#@$",
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
-		},
-		"quoted-abc": {
-			s:        "abc",
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"abc"`,
-		},
-		"quoted-123": {
-			s:        "123",
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"123"`,
-		},
-		"quoted-#@$": {
-			s:        "#@$",
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"#@$"`,
 		},
 	}
 
@@ -264,21 +439,6 @@ func TestBuffer_WriteInt64(t *testing.T) {
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content--10",
 		},
-		"quoted-10": {
-			i:        10,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"10"`,
-		},
-		"quoted-0": {
-			i:        0,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"0"`,
-		},
-		"quoted-(-10)": {
-			i:        -10,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"-10"`,
-		},
 		"edge-max": {
 			i:        math.MaxInt64,
 			buf:      NewBuffer(),
@@ -334,16 +494,6 @@ func TestBuffer_WriteUint64(t *testing.T) {
 			i:        0,
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-0",
-		},
-		"quoted-10": {
-			i:        10,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"10"`,
-		},
-		"quoted-0": {
-			i:        0,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"0"`,
 		},
 		"edge-max": {
 			i:        math.MaxUint64,
@@ -426,31 +576,6 @@ func TestBuffer_WriteFloat64(t *testing.T) {
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content--3.14159",
 		},
-		"quoted-3.14159": {
-			i:        3.14159,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"3.14159"`,
-		},
-		"quoted-10": {
-			i:        10,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"10"`,
-		},
-		"quoted-0": {
-			i:        0,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"0"`,
-		},
-		"quoted-(-10)": {
-			i:        -10,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"-10"`,
-		},
-		"quoted-(-3.14159)": {
-			i:        -3.14159,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"-3.14159"`,
-		},
 		"edge-max": {
 			i:   math.MaxFloat64,
 			buf: NewBuffer(),
@@ -504,16 +629,6 @@ func TestBuffer_WriteBool(t *testing.T) {
 			b:        false,
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-false",
-		},
-		"quoted-true": {
-			b:        true,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"true"`,
-		},
-		"quoted-false": {
-			b:        false,
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"false"`,
 		},
 	}
 
@@ -586,24 +701,6 @@ func TestBuffer_WriteTime(t *testing.T) {
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-",
 		},
-		"quoted-utc-rfc3339": {
-			t:        dateUTC,
-			layout:   time.RFC3339,
-			buf:      NewBuffer().WithQuotes(),
-			expected: fmt.Sprintf(`"%s"`, dateUTC.Format(time.RFC3339)),
-		},
-		"quoted-mow-rfc3339": {
-			t:        dateMOW,
-			layout:   time.RFC3339,
-			buf:      NewBuffer().WithQuotes(),
-			expected: fmt.Sprintf(`"%s"`, dateMOW.Format(time.RFC3339)),
-		},
-		"quoted-utc-empty": {
-			t:        dateUTC,
-			layout:   "",
-			buf:      NewBuffer().WithQuotes(),
-			expected: `""`,
-		},
 		"empty-utc-custom": {
 			t:        dateUTC,
 			layout:   "2006-01-02",
@@ -672,21 +769,6 @@ func TestBuffer_Write(t *testing.T) {
 			buf:      NewBuffer().WriteString("content-"),
 			expected: "content-#@$",
 		},
-		"quoted-abc": {
-			b:        []byte{'a', 'b', 'c'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"abc"`,
-		},
-		"quoted-123": {
-			b:        []byte{'1', '2', '3'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"123"`,
-		},
-		"quoted-#@$": {
-			b:        []byte{'#', '@', '$'},
-			buf:      NewBuffer().WithQuotes(),
-			expected: `"#@$"`,
-		},
 	}
 
 	for name, test := range testCases {
@@ -722,10 +804,6 @@ func TestBuffer_WriteTo(t *testing.T) {
 		"content": {
 			buf:      NewBuffer().WriteString("content"),
 			expected: "content",
-		},
-		"quoted-content": {
-			buf:      NewBuffer().WithQuotes().WriteString("content"),
-			expected: `"content"`,
 		},
 	}
 
@@ -904,23 +982,19 @@ func TestBuffer_CutSuffix(t *testing.T) {
 }
 
 func BenchmarkBuffer(b *testing.B) {
-	prepareBuf := func(buf *Buffer, quoted bool) *Buffer {
-		if quoted {
-			return buf.WithQuotes()
-		}
-
+	prepareBuf := func(buf *Buffer) *Buffer {
 		return buf
 	}
 
-	writeAll := func(buf *Buffer, quoted bool, count int) {
+	writeAll := func(buf *Buffer, count int) {
 		for range count {
-			prepareBuf(buf, quoted).WriteByte('b')
-			prepareBuf(buf, quoted).WriteString("string")
-			prepareBuf(buf, quoted).WriteInt64(-10)
-			prepareBuf(buf, quoted).WriteUint64(10)
-			prepareBuf(buf, quoted).WriteFloat64(7.5, 64)
-			prepareBuf(buf, quoted).WriteBool(true)
-			prepareBuf(buf, quoted).WriteTime(time.Now(), time.RFC3339)
+			prepareBuf(buf).WriteByte('b')
+			prepareBuf(buf).WriteString("string")
+			prepareBuf(buf).WriteInt64(-10)
+			prepareBuf(buf).WriteUint64(10)
+			prepareBuf(buf).WriteFloat64(7.5, 64)
+			prepareBuf(buf).WriteBool(true)
+			prepareBuf(buf).WriteTime(time.Now(), time.RFC3339)
 		}
 	}
 
@@ -956,7 +1030,7 @@ func BenchmarkBuffer(b *testing.B) {
 
 			for b.Loop() {
 				buf := NewBuffer()
-				writeAll(buf, bench.quoted, bench.count)
+				writeAll(buf, bench.count)
 
 				buf.Dispose()
 			}

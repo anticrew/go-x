@@ -9,8 +9,6 @@ import (
 )
 
 const (
-	Quote = '"'
-
 	defaultSize = 1024
 )
 
@@ -21,88 +19,79 @@ var _pool = pool.NewPool(func() *Buffer {
 })
 
 type Buffer struct {
-	buf    []byte
-	quotes bool
+	buf []byte
 }
 
 func NewBuffer() *Buffer {
 	return _pool.Get()
 }
 
-func (b *Buffer) WithQuotes() *Buffer {
-	b.quotes = true
-	return b
+func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
+	l := int64(len(b.buf))
+
+	var newPos int64
+	switch whence {
+	case io.SeekStart:
+		newPos = offset
+
+	case io.SeekCurrent:
+		newPos = l + offset
+
+	case io.SeekEnd:
+		newPos = l + offset
+
+	default:
+		return 0, ErrInvalidWhence
+	}
+
+	if newPos < 0 {
+		return 0, ErrInvalidOffset
+	}
+	if newPos > l {
+		return 0, ErrInvalidOffset
+	}
+
+	b.buf = b.buf[:newPos]
+	return newPos, nil
 }
 
 func (b *Buffer) WriteByte(v byte) *Buffer {
-	b.writeQuote()
 	b.buf = append(b.buf, v)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteBytes(v []byte) *Buffer {
-	b.writeQuote()
 	b.buf = append(b.buf, v...)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteString(s string) *Buffer {
-	b.writeQuote()
 	b.buf = append(b.buf, s...)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteInt64(i int64) *Buffer {
-	b.writeQuote()
 	b.buf = strconv.AppendInt(b.buf, i, 10)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteUint64(i uint64) *Buffer {
-	b.writeQuote()
 	b.buf = strconv.AppendUint(b.buf, i, 10)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteFloat64(f float64, bitSize int) *Buffer {
-	b.writeQuote()
 	b.buf = strconv.AppendFloat(b.buf, f, 'f', -1, bitSize)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteBool(v bool) *Buffer {
-	b.writeQuote()
 	b.buf = strconv.AppendBool(b.buf, v)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
 func (b *Buffer) WriteTime(t time.Time, layout string) *Buffer {
-	b.writeQuote()
 	b.buf = t.AppendFormat(b.buf, layout)
-	b.writeQuote()
-	b.quotes = false
-
 	return b
 }
 
@@ -128,7 +117,6 @@ func (b *Buffer) String() string {
 }
 
 func (b *Buffer) Reset() {
-	b.quotes = false
 	b.buf = b.buf[:0]
 }
 
@@ -157,14 +145,6 @@ func (b *Buffer) CutSuffix(suffix []byte) *Buffer {
 	b.buf = b.buf[:bufLen-suffixLen]
 
 	return b
-}
-
-func (b *Buffer) writeQuote() {
-	if !b.quotes {
-		return
-	}
-
-	b.buf = append(b.buf, Quote)
 }
 
 func (b *Buffer) WriteTo(out io.Writer) (int64, error) {
