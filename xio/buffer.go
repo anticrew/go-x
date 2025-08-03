@@ -152,6 +152,17 @@ func (b *Buffer) WriteTo(out io.Writer) (int64, error) {
 	return int64(n), err
 }
 
+func (b *Buffer) Copy(dst *Buffer, start, end int) {
+	if start < 0 {
+		start = 0
+	}
+	if l := len(b.buf); end > l {
+		end = l
+	}
+
+	dst.WriteBytes(b.buf[start:end])
+}
+
 func disposeBuffer(b *Buffer) {
 	b.Reset()
 	_pool.Put(b)

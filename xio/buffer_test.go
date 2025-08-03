@@ -981,6 +981,53 @@ func TestBuffer_CutSuffix(t *testing.T) {
 	}
 }
 
+func TestBuffer_Copy(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		buf        *Buffer
+		start, end int
+		expected   string
+	}
+
+	testCases := map[string]testCase{
+		"empty": {
+			buf:      NewBuffer(),
+			start:    0,
+			end:      0,
+			expected: "",
+		},
+		"full": {
+			buf:      NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			start:    0,
+			end:      20,
+			expected: "uswiOPYT8AfCutIIqTf8",
+		},
+		"part": {
+			buf:      NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			start:    5,
+			end:      15,
+			expected: "PYT8AfCutI",
+		},
+		"negative": {
+			buf:      NewBuffer().WriteString("uswiOPYT8AfCutIIqTf8"),
+			start:    -5,
+			end:      10,
+			expected: "uswiOPYT8A",
+		},
+	}
+
+	for name, test := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			dst := NewBuffer()
+			test.buf.Copy(dst, test.start, test.end)
+			assert.Equal(t, test.expected, dst.String())
+		})
+	}
+}
+
 func BenchmarkBuffer(b *testing.B) {
 	prepareBuf := func(buf *Buffer) *Buffer {
 		return buf
